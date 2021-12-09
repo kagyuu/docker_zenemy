@@ -1,0 +1,16 @@
+FROM nvidia/cuda:10.0-devel-ubuntu14.04
+
+# Remove nvidia apt package sites for ubuntu 14. Because it's too old and deprecated.
+RUN rm /etc/apt/sources.list.d/*
+RUN apt-get update
+
+RUN apt-get install -y wget libcurl3 libjansson-dev
+RUN cd ~/ && wget -O - 'https://github.com/zealot-rvn/z-enemy/releases/download/kawpow262/z-enemy-2.6.2-cuda100.tar.gz' | tar xzvf -
+
+# need libcrypt
+RUN cd ~/ && wget --no-check-certificate -O - 'https://www.openssl.org/source/openssl-1.1.1l.tar.gz' | tar xzvf -
+RUN cd ~/openssl-1.1.1l && ./config && make && make install
+
+# need GLIBCXX_3.4.21
+RUN cd ~/ && wget -q -O libstdc++6 http://security.ubuntu.com/ubuntu/pool/main/g/gcc-5/libstdc++6_5.4.0-6ubuntu1~16.04.12_amd64.deb && dpkg --force-all -i libstdc++6
+RUN strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBCX
